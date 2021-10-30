@@ -27,8 +27,8 @@ pipeline:
                       steps:
                           - step:
                                 type: Run
-                                name: Snyk Code
-                                identifier: Snyk_Code
+                                name: Compile
+                                identifier: Compile
                                 spec:
                                     connectorRef: org.Dockerhub
                                     image: <+CI.variables.SNYK_IMAGE>
