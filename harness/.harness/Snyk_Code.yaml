@@ -33,8 +33,7 @@ pipeline:
                                     connectorRef: org.Dockerhub
                                     image: <+CI.variables.SNYK_IMAGE>
                                     command: |-
-                                        SNYK_TOKEN=<+secrets.getValue("SNYK_TOKEN")>
-                                        snyk config set api=$SNYK_TOKEN
+                                        snyk auth
                                         snyk code test || true
                                     privileged: true
                                     envVariables:
@@ -43,3 +42,4 @@ pipeline:
                   - name: SNYK_IMAGE
                     type: String
                     value: snyk/snyk-cli:1.745.0-maven-3.5.4
+    description: Find security issues using static code analysis.
