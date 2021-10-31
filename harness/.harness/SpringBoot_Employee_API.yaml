@@ -6,6 +6,9 @@ pipeline:
                   - name: SNYK_IMAGE
                     type: String
                     value: snyk/snyk-cli:1.745.0-maven-3.5.4
+                  - name: MAVEN_IMAGE
+                    type: String
+                    value: maven:3.8.3-openjdk-11-slim
               type: CI
               spec:
                   infrastructure:
@@ -18,14 +21,12 @@ pipeline:
                           - step:
                                 type: Run
                                 spec:
+                                    connectorRef: org.Dockerhub
+                                    image: <+CI.variables.MAVEN_IMAGE>
+                                    command: mvn -DskipTests -Dsnyk.skip package
                                     privileged: true
-                                    image: <+CI.variables.SNYK_IMAGE>
                                     envVariables:
                                         SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>N")>
-                                    connectorRef: org.Dockerhub
-                                    command: |-
-                                        snyk config set api=$SNYK_TOKEN
-                                        snyk code test || true
                                 name: Compile
                                 identifier: Compile
                   cloneCodebase: true
