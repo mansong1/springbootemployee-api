@@ -22,7 +22,7 @@ pipeline:
                       type: KubernetesDirect
                       spec:
                           connectorRef: org.GKE
-                          namespace: harness-build
+                          namespace: harness-builds
                   execution:
                       steps:
                           - step:
@@ -33,11 +33,11 @@ pipeline:
                                     connectorRef: org.Dockerhub
                                     image: <+CI.variables.SNYK_IMAGE>
                                     command: |-
-                                        snyk auth
+                                        snyk config set api=$SNYK_TOKEN
                                         snyk container test || true
                                     privileged: true
                                     envVariables:
-                                        SNYK_TOKEN: <+secrets.getValue("SNYK_TOKEN")>
+                                        SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>N")>
               variables:
                   - name: SNYK_IMAGE
                     type: String
