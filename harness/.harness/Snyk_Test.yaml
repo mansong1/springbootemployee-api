@@ -22,7 +22,7 @@ pipeline:
                       type: KubernetesDirect
                       spec:
                           connectorRef: org.GKE
-                          namespace: harness-build
+                          namespace: harness-builds
                   execution:
                       steps:
                           - step:
