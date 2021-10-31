@@ -2,9 +2,9 @@ pipeline:
     stages:
         - stage:
               variables:
-                  - value: snyk/snyk-cli:1.745.0-maven-3.5.4
+                  - name: SNYK_IMAGE
                     type: String
-                    name: SNYK_IMAGE
+                    value: snyk/snyk-cli:1.745.0-maven-3.5.4
               type: CI
               spec:
                   infrastructure:
@@ -17,14 +17,14 @@ pipeline:
                           - step:
                                 type: Run
                                 spec:
-                                    privileged: true
-                                    image: <+CI.variables.SNYK_IMAGE>
-                                    envVariables:
-                                        SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>N")>
                                     connectorRef: org.Dockerhub
+                                    image: <+CI.variables.SNYK_IMAGE>
                                     command: |-
                                         snyk config set api=$SNYK_TOKEN
                                         snyk container test || true
+                                    privileged: true
+                                    envVariables:
+                                        SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>N")>
                                 name: Snyk Container
                                 identifier: Snyk_Container
                   cloneCodebase: true
