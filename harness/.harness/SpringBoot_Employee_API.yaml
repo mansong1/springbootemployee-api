@@ -29,6 +29,45 @@ pipeline:
                                         SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>N")>
                                 name: Compile
                                 identifier: Compile
+                          - step:
+                                type: Run
+                                name: Snyk Test
+                                identifier: Snyk_Test
+                                spec:
+                                    connectorRef: org.Dockerhub
+                                    image: <+CI.variables.SNYK_IMAGE>
+                                    command: |-
+                                        snyk config set api=$SNYK_TOKEN
+                                        snyk test || true
+                                    privileged: true
+                                    envVariables:
+                                        SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>
+                          - step:
+                                type: Run
+                                name: Snyk Code Test
+                                identifier: Snyk_Code_Test
+                                spec:
+                                    connectorRef: org.Dockerhub
+                                    image: <+CI.variables.SNYK_IMAGE>
+                                    command: |-
+                                        snyk config set api=$SNYK_TOKEN
+                                        snyk code test || true
+                                    privileged: true
+                                    envVariables:
+                                        SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>
+                          - step:
+                                type: Run
+                                name: Snyk Container Test
+                                identifier: Snyk_Container_Test
+                                spec:
+                                    connectorRef: org.Dockerhub
+                                    image: <+CI.variables.SNYK_IMAGE>
+                                    command: |-
+                                        snyk config set api=$SNYK_TOKEN
+                                        snyk test || true
+                                    privileged: true
+                                    envVariables:
+                                        SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>
                   cloneCodebase: true
               name: CI
               identifier: CI
