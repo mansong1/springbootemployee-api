@@ -119,7 +119,7 @@ pipeline:
                                                     connectorRef: org.Github
                                                     gitFetchType: Branch
                                                     paths:
-                                                        - manifests/<+infra.namespace>/templates
+                                                        - manifests/<+pipeline.stages.Deploy_Staging.spec.infrastructure.infrastructureDefinition.spec.namespace>/templates
                                                     repoName: springbootemployee-api
                                                     branch: master
                                             skipResourceVersioning: false
@@ -133,7 +133,7 @@ pipeline:
                                                     connectorRef: org.Github
                                                     gitFetchType: Branch
                                                     paths:
-                                                        - manifests/<+infra.namespace>/values.yaml
+                                                        - manifests/<+pipeline.stages.Deploy_Staging.spec.infrastructure.infrastructureDefinition.spec.namespace>/values.yaml
                                                     repoName: springbootemployee-api
                                                     branch: master
                   infrastructure:
