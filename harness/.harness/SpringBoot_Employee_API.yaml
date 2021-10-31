@@ -62,11 +62,10 @@ pipeline:
                                 identifier: Build_Container
                                 spec:
                                     connectorRef: org.Dockerhub
-                                    repo: mansong
+                                    repo: mansong/springbootemployee
                                     tags:
                                         - <+pipeline.sequenceId>
                                     dockerfile: Dockerfile.harness
-                                    context: "."
                                     optimize: true
                           - step:
                                 type: Run
@@ -77,7 +76,7 @@ pipeline:
                                     image: <+CI.variables.SNYK_IMAGE>
                                     command: |-
                                         snyk config set api=$SNYK_TOKEN
-                                        snyk test || true
+                                        snyk test mansong/springbootemployee:<+pipeline.sequenceid> || true
                                     privileged: true
                                     envVariables:
                                         SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>
