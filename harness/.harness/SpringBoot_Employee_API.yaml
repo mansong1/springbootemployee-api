@@ -160,7 +160,7 @@ pipeline:
                                             script: |-
                                                 SNYK_TOKEN=<+secrets.getValue("org.SNYK_TOKEN")>
                                                 snyk config set api=$SNYK_TOKEN
-                                                snyk iac test ./employee-K8s.yaml || true
+                                                snyk iac test <+pipeline.stages.Deploy_Staging.spec.serviceConfig.serviceDefinition.spec.manifests.staging_manifest.spec.store.spec.paths> || true
                                     environmentVariables: []
                                     outputVariables: []
                                     executionTarget: {}
