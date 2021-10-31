@@ -81,6 +81,12 @@ pipeline:
                                     envVariables:
                                         SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>
                   cloneCodebase: true
+                  serviceConfig:
+                      serviceRef: ""
+                      serviceDefinition:
+                          type: Kubernetes
+                          spec:
+                              variables: []
               name: CI
               identifier: CI
         - stage:
