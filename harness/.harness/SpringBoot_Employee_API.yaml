@@ -119,7 +119,7 @@ pipeline:
                                                     connectorRef: org.Github
                                                     gitFetchType: Branch
                                                     paths:
-                                                        - manifests/staging/templates
+                                                        - manifests/staging/templates/employee.yaml
                                                     repoName: springbootemployee
                                                     branch: master
                                             skipResourceVersioning: false
