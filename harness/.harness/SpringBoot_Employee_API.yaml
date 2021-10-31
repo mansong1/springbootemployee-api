@@ -108,13 +108,41 @@ pipeline:
                                           connectorRef: org.Dockerhub
                                           imagePath: mansong/springbootemployee
                                           tag: <+pipeline.stages.CI.spec.execution.steps.Build_Container.spec.tags>
+                              manifests:
+                                  - manifest:
+                                        identifier: staging_manifest
+                                        type: K8sManifest
+                                        spec:
+                                            store:
+                                                type: Github
+                                                spec:
+                                                    connectorRef: org.Github
+                                                    gitFetchType: Branch
+                                                    paths:
+                                                        - manifests/staging/templates/employee.yaml
+                                                    repoName: springbootemployee
+                                                    branch: master
+                                            skipResourceVersioning: false
+                                  - manifest:
+                                        identifier: staging_values
+                                        type: Values
+                                        spec:
+                                            store:
+                                                type: Github
+                                                spec:
+                                                    connectorRef: org.Github
+                                                    gitFetchType: Branch
+                                                    paths:
+                                                        - manifests/staging/values.yaml
+                                                    repoName: springbootemployee
+                                                    branch: master
                   infrastructure:
                       environmentRef: staging
                       infrastructureDefinition:
                           type: KubernetesDirect
                           spec:
                               connectorRef: org.GKE
-                              namespace: harness-deploys
+                              namespace: staging
                               releaseName: release-<+INFRA_KEY>
                       allowSimultaneousDeployments: false
                   execution:
@@ -132,7 +160,7 @@ pipeline:
                                             script: |-
                                                 SNYK_TOKEN=<+secrets.getValue("org.SNYK_TOKEN")>
                                                 snyk config set api=$SNYK_TOKEN
-                                                snyk iac test ./employee-K8s.yaml || true
+                                                snyk iac test <+pipeline.stages.Deploy_Staging.spec.serviceConfig.serviceDefinition.spec.manifests.staging_manifest.spec.store.spec.paths> || true
                                     environmentVariables: []
                                     outputVariables: []
                                     executionTarget: {}
