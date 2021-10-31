@@ -142,7 +142,7 @@ pipeline:
                           type: KubernetesDirect
                           spec:
                               connectorRef: org.GKE
-                              namespace: harness-deploys
+                              namespace: staging
                               releaseName: release-<+INFRA_KEY>
                       allowSimultaneousDeployments: false
                   execution:
