@@ -18,15 +18,37 @@ pipeline:
                                 type: Run
                                 spec:
                                     connectorRef: org.Dockerhub
-                                    image: <+CI.variables.SNYK_IMAGE>
-                                    command: |-
-                                        snyk config set api=$SNYK_TOKEN
-                                        snyk container test || true
+                                    image: <+CI.variables.MAVEN_IMAGE>
+                                    command: mvn -DskipTests -Dsnyk.skip package
                                     privileged: true
                                     envVariables:
                                         SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>N")>
-                                name: Snyk Container
-                                identifier: Snyk_Container
+                                name: Compile
+                                identifier: Compile
+                          - step:
+                                type: BuildAndPushDockerRegistry
+                                name: Build Container
+                                identifier: Build_Container
+                                spec:
+                                    connectorRef: org.Dockerhub
+                                    repo: mansong/springbootemployee
+                                    tags:
+                                        - <+pipeline.sequenceId>
+                                    dockerfile: Dockerfile.harness
+                                    optimize: true
+                          - step:
+                                type: Run
+                                name: Snyk Container Test
+                                identifier: Snyk_Container_Test
+                                spec:
+                                    connectorRef: org.Dockerhub
+                                    image: <+CI.variables.SNYK_IMAGE>
+                                    command: |-
+                                        snyk config set api=$SNYK_TOKEN
+                                        snyk test mansong/springbootemployee:<+pipeline.sequenceid> || true
+                                    privileged: true
+                                    envVariables:
+                                        SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>
                   cloneCodebase: true
               name: CI
               identifier: CI
