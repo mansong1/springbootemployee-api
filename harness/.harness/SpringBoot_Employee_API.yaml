@@ -83,6 +83,76 @@ pipeline:
                   cloneCodebase: true
               name: CI
               identifier: CI
+        - stage:
+              name: Deploy Staging
+              identifier: Deploy_Staging
+              description: ""
+              type: Deployment
+              spec:
+                  serviceConfig:
+                      serviceRef: employeeapi
+                      serviceDefinition:
+                          type: Kubernetes
+                          spec:
+                              variables: []
+                              artifacts:
+                                  primary:
+                                      type: DockerRegistry
+                                      spec:
+                                          connectorRef: org.Dockerhub
+                                          imagePath: mansong/springbootemployee
+                                          tag: <+pipeline.stages.CI.spec.execution.steps.Build_Container.spec.tags>
+                  infrastructure:
+                      environmentRef: staging
+                      infrastructureDefinition:
+                          type: KubernetesDirect
+                          spec:
+                              connectorRef: org.GKE
+                              namespace: harness-deploys
+                              releaseName: release-<+INFRA_KEY>
+                      allowSimultaneousDeployments: false
+                  execution:
+                      steps:
+                          - step:
+                                type: ShellScript
+                                name: Snyk IaC Test
+                                identifier: Snyk_IaC_Test
+                                spec:
+                                    shell: Bash
+                                    onDelegate: true
+                                    source:
+                                        type: Inline
+                                        spec:
+                                            script: |-
+                                                SNYK_TOKEN=<+secrets.getValue("org.SNYK_TOKEN")>
+                                                snyk config set api=$SNYK_TOKEN
+                                                snyk iac test ./employee-K8s.yaml || true
+                                    environmentVariables: []
+                                    outputVariables: []
+                                    executionTarget: {}
+                                timeout: 10m
+                          - step:
+                                name: Rollout Deployment
+                                identifier: rolloutDeployment
+                                type: K8sRollingDeploy
+                                timeout: 10m
+                                spec:
+                                    skipDryRun: false
+                      rollbackSteps:
+                          - step:
+                                name: Rollback Rollout Deployment
+                                identifier: rollbackRolloutDeployment
+                                type: K8sRollingRollback
+                                timeout: 10m
+                                spec: {}
+                  serviceDependencies: []
+              tags: {}
+              failureStrategies:
+                  - onFailure:
+                        errors:
+                            - AllErrors
+                        action:
+                            type: StageRollback
     properties:
         ci:
             codebase:
