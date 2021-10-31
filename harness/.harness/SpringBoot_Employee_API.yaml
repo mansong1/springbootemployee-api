@@ -107,7 +107,7 @@ pipeline:
                                       spec:
                                           connectorRef: org.Dockerhub
                                           imagePath: mansong/springbootemployee
-                                          tag: <+pipeline.stages.CI.spec.execution.steps.Build_Container.spec.tags>
+                                          tag: <+pipeline.sequenceId>
                               manifests:
                                   - manifest:
                                         identifier: staging_manifest
