@@ -108,6 +108,34 @@ pipeline:
                                           connectorRef: org.Dockerhub
                                           imagePath: mansong/springbootemployee
                                           tag: <+pipeline.stages.CI.spec.execution.steps.Build_Container.spec.tags>
+                              manifests:
+                                  - manifest:
+                                        identifier: staging_manifest
+                                        type: K8sManifest
+                                        spec:
+                                            store:
+                                                type: Github
+                                                spec:
+                                                    connectorRef: org.Github
+                                                    gitFetchType: Branch
+                                                    paths:
+                                                        - manifests/staging/templates
+                                                    repoName: springbootemployee
+                                                    branch: master
+                                            skipResourceVersioning: false
+                                  - manifest:
+                                        identifier: staging_values
+                                        type: Values
+                                        spec:
+                                            store:
+                                                type: Github
+                                                spec:
+                                                    connectorRef: org.Github
+                                                    gitFetchType: Branch
+                                                    paths:
+                                                        - manifests/staging/values.yaml
+                                                    repoName: springbootemployee
+                                                    branch: master
                   infrastructure:
                       environmentRef: staging
                       infrastructureDefinition:
