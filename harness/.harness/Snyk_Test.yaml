@@ -33,7 +33,7 @@ pipeline:
                                     connectorRef: org.Dockerhub
                                     image: <+CI.variables.SNYK_IMAGE>
                                     command: |-
-                                        snyk auth
+                                        snyk config set api=$SNYK_TOKEN
                                         snyk test || true
                                     privileged: true
                                     envVariables:
