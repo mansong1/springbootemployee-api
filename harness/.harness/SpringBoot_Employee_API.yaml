@@ -18,6 +18,33 @@ pipeline:
                           namespace: harness-builds
                   execution:
                       steps:
+                          - parallel:
+                                - step:
+                                      type: Run
+                                      name: Snyk Test
+                                      identifier: Snyk_Test
+                                      spec:
+                                          connectorRef: org.Dockerhub
+                                          image: <+CI.variables.SNYK_IMAGE>
+                                          command: |-
+                                              snyk config set api=$SNYK_TOKEN
+                                              snyk test || true
+                                          privileged: true
+                                          envVariables:
+                                              SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>
+                                - step:
+                                      type: Run
+                                      name: Snyk Code Test
+                                      identifier: Snyk_Code_Test
+                                      spec:
+                                          connectorRef: org.Dockerhub
+                                          image: <+CI.variables.SNYK_IMAGE>
+                                          command: |-
+                                              snyk config set api=$SNYK_TOKEN
+                                              snyk code test || true
+                                          privileged: true
+                                          envVariables:
+                                              SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>
                           - step:
                                 type: Run
                                 spec:
@@ -30,31 +57,17 @@ pipeline:
                                 name: Compile
                                 identifier: Compile
                           - step:
-                                type: Run
-                                name: Snyk Test
-                                identifier: Snyk_Test
+                                type: BuildAndPushDockerRegistry
+                                name: Build Container
+                                identifier: Build_Container
                                 spec:
                                     connectorRef: org.Dockerhub
-                                    image: <+CI.variables.SNYK_IMAGE>
-                                    command: |-
-                                        snyk config set api=$SNYK_TOKEN
-                                        snyk test || true
-                                    privileged: true
-                                    envVariables:
-                                        SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>
-                          - step:
-                                type: Run
-                                name: Snyk Code Test
-                                identifier: Snyk_Code_Test
-                                spec:
-                                    connectorRef: org.Dockerhub
-                                    image: <+CI.variables.SNYK_IMAGE>
-                                    command: |-
-                                        snyk config set api=$SNYK_TOKEN
-                                        snyk code test || true
-                                    privileged: true
-                                    envVariables:
-                                        SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>
+                                    repo: mansong
+                                    tags:
+                                        - <+pipeline.sequenceId>
+                                    dockerfile: Dockerfile.harness
+                                    context: "."
+                                    optimize: true
                           - step:
                                 type: Run
                                 name: Snyk Container Test
