@@ -1,0 +1,5 @@
+name: snyk-employee-api
+replicas: 1
+
+image: <+artifact.image>
+namespace: <+infra.namespace>
