@@ -158,9 +158,11 @@ pipeline:
                                         type: Inline
                                         spec:
                                             script: |-
+                                                git clone https://github.com/mansong1/springbootemployee-api
+                                                cd springbootemployee-api
                                                 SNYK_TOKEN=<+secrets.getValue("org.SNYK_TOKEN")>
                                                 snyk config set api=$SNYK_TOKEN
-                                                snyk iac test <+pipeline.stages.Deploy_Staging.spec.serviceConfig.serviceDefinition.spec.manifests.staging_manifest.spec.store.spec.paths> || true
+                                                snyk iac test manifests/<+infra.namespace>/templates/*.yaml || true
                                     environmentVariables: []
                                     outputVariables: []
                                     executionTarget: {}
