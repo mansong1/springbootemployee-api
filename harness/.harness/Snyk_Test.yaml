@@ -2,16 +2,16 @@ pipeline:
     stages:
         - stage:
               variables:
-                  - value: snyk/snyk-cli:1.745.0-maven-3.5.4
+                  - name: SNYK_IMAGE
                     type: String
-                    name: SNYK_IMAGE
+                    value: snyk/snyk-cli:1.745.0-maven-3.5.4
               type: CI
               spec:
                   infrastructure:
                       type: KubernetesDirect
                       spec:
-                          namespace: harness-builds
                           connectorRef: org.GKE
+                          namespace: harness-builds
                   execution:
                       steps:
                           - step:
