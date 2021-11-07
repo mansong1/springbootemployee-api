@@ -17,15 +17,23 @@ pipeline:
                           - step:
                                 type: Run
                                 spec:
-                                    privileged: true
+                                    connectorRef: org.Dockerhub
                                     image: <+CI.variables.SNYK_IMAGE>
+                                    command: |
+                                        npm install -g json2xml-cli
+                                        snyk config set api=$SNYK_TOKEN
+
+                                        snyk test --json-file-output=vuln.json
+
+                                        json2xml -i vuln.json -o vuln.xml
+                                    privileged: true
+                                    reports:
+                                        type: JUnit
+                                        spec:
+                                            paths:
+                                                - "**/*.xml"
                                     envVariables:
                                         SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>
-                                    connectorRef: org.Dockerhub
-                                    command: |-
-                                        npm install json2xml
-                                        snyk config set api=$SNYK_TOKEN
-                                        snyk test || true
                                 name: Snyk Test
                                 identifier: Snyk_Test
                   cloneCodebase: true
