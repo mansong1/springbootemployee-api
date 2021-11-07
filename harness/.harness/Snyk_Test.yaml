@@ -23,9 +23,7 @@ pipeline:
                                         npm install -g json2xml-cli
                                         snyk config set api=$SNYK_TOKEN
 
-                                        snyk test --json-file-output=vuln.json
-
-                                        json2xml -i vuln.json -o vuln.xml
+                                        snyk test --json-file-output=vuln.json | json2xml -i vuln.json -o vuln.xml
                                     privileged: true
                                     reports:
                                         type: JUnit
