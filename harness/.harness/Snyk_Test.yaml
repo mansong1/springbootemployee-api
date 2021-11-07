@@ -20,7 +20,7 @@ pipeline:
                                     connectorRef: org.Dockerhub
                                     image: <+CI.variables.SNYK_IMAGE>
                                     command: |
-                                        npm install --save-dev jsonjunit
+                                        npm install -g jsonjunit
                                         snyk config set api=$SNYK_TOKEN
 
                                         snyk test --json-file-output=vuln.json || true
@@ -34,6 +34,10 @@ pipeline:
                                                 - "**/*.xml"
                                     envVariables:
                                         SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>
+                                    resources:
+                                        limits:
+                                            memory: 1Gi
+                                            cpu: "1.0"
                                 name: Snyk Test
                                 identifier: Snyk_Test
                   cloneCodebase: true
