@@ -22,7 +22,7 @@ pipeline:
                                     command: |-
                                         snyk config set api=$SNYK_TOKEN
 
-                                        snyk test --json-file-output=vuln.json
+                                        snyk test --json-file-output=vuln.json || true
                                     privileged: true
                                     reports:
                                         type: JUnit
