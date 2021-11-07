@@ -25,7 +25,7 @@ pipeline:
 
                                         snyk test --json-file-output=vuln.json || true
 
-                                        $ node_modules/.bin/jsonjunit --json vuln.json --junit out.xml
+                                        jsonjunit --json vuln.json --junit out.xml
                                     privileged: true
                                     reports:
                                         type: JUnit
