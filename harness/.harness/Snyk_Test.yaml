@@ -19,13 +19,10 @@ pipeline:
                                 spec:
                                     connectorRef: org.Dockerhub
                                     image: <+CI.variables.SNYK_IMAGE>
-                                    command: |
-                                        npm install -g jsonjunit
+                                    command: |-
                                         snyk config set api=$SNYK_TOKEN
 
-                                        snyk test --json-file-output=vuln.json || true
-
-                                        jsonjunit --json vuln.json --junit out.xml
+                                        snyk test --json-file-output=vuln.json
                                     privileged: true
                                     reports:
                                         type: JUnit
