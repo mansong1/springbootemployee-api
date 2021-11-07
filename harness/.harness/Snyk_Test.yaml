@@ -19,13 +19,13 @@ pipeline:
                                 spec:
                                     connectorRef: org.Dockerhub
                                     image: <+CI.variables.SNYK_IMAGE>
-                                    command: |-
-                                        npm i @lotuz/lighthouse-json-to-junit-xml
+                                    command: |
+                                        npm install --save-dev jsonjunit
                                         snyk config set api=$SNYK_TOKEN
 
                                         snyk test --json-file-output=vuln.json || true
 
-                                        ./lighthouse-xml-to-junit-xml.js -o output.xml vuln.json
+                                        $ node_modules/.bin/jsonjunit --json vuln.json --junit out.xml
                                     privileged: true
                                     reports:
                                         type: JUnit
