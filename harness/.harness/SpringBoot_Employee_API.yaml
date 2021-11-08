@@ -76,7 +76,7 @@ pipeline:
                                     image: <+CI.variables.SNYK_IMAGE>
                                     command: |-
                                         snyk config set api=$SNYK_TOKEN
-                                        snyk test mansong/springbootemployee:<+pipeline.sequenceid> || true
+                                        snyk test mansong/springbootemployee:<+pipeline.sequenceId> || true
                                     privileged: true
                                     envVariables:
                                         SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>
@@ -107,7 +107,7 @@ pipeline:
                                       spec:
                                           connectorRef: org.Dockerhub
                                           imagePath: mansong/springbootemployee
-                                          tag: <+pipeline.stages.CI.spec.execution.steps.Build_Container.spec.tags>
+                                          tag: <+pipeline.sequenceId>
                               manifests:
                                   - manifest:
                                         identifier: staging_manifest
@@ -119,8 +119,8 @@ pipeline:
                                                     connectorRef: org.Github
                                                     gitFetchType: Branch
                                                     paths:
-                                                        - manifests/api/templates/employee.yaml
-                                                    repoName: springbootemployee
+                                                        - manifests/staging/templates
+                                                    repoName: springbootemployee-api
                                                     branch: master
                                             skipResourceVersioning: false
                                   - manifest:
@@ -133,8 +133,8 @@ pipeline:
                                                     connectorRef: org.Github
                                                     gitFetchType: Branch
                                                     paths:
-                                                        - manifests/api/values.yaml
-                                                    repoName: springbootemployee
+                                                        - manifests/staging/values.yaml
+                                                    repoName: springbootemployee-api
                                                     branch: master
                   infrastructure:
                       environmentRef: staging
@@ -158,13 +158,18 @@ pipeline:
                                         type: Inline
                                         spec:
                                             script: |-
+                                                git clone https://github.com/mansong1/springbootemployee-api
+                                                cd springbootemployee-api
                                                 SNYK_TOKEN=<+secrets.getValue("org.SNYK_TOKEN")>
                                                 snyk config set api=$SNYK_TOKEN
-                                                snyk iac test <+pipeline.stages.Deploy_Staging.spec.serviceConfig.serviceDefinition.spec.manifests.staging_manifest.spec.store.spec.paths> || true
+                                                snyk iac test manifests/<+infra.namespace>/templates/*.yaml || true
                                     environmentVariables: []
                                     outputVariables: []
                                     executionTarget: {}
+                                    delegateSelectors:
+                                        - gkedelegate
                                 timeout: 10m
+                                failureStrategies: []
                           - step:
                                 name: Rollout Deployment
                                 identifier: rolloutDeployment
@@ -172,6 +177,9 @@ pipeline:
                                 timeout: 10m
                                 spec:
                                     skipDryRun: false
+                                    delegateSelectors:
+                                        - gkedelegate
+                                failureStrategies: []
                       rollbackSteps:
                           - step:
                                 name: Rollback Rollout Deployment
