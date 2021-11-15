@@ -97,6 +97,10 @@ pipeline:
                                     privileged: true
                                     envVariables:
                                         SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>
+                                    resources:
+                                        limits:
+                                            memory: 1.0Gi
+                                            cpu: "1.0"
                   cloneCodebase: true
                   serviceConfig:
                       serviceRef: ""
