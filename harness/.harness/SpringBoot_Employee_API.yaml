@@ -179,8 +179,11 @@ pipeline:
                                         type: Inline
                                         spec:
                                             script: |-
+                                                rm -rf springbootemployee-api || true
+
                                                 git clone https://github.com/mansong1/springbootemployee-api
                                                 cd springbootemployee-api
+
                                                 SNYK_TOKEN=<+secrets.getValue("org.SNYK_TOKEN")>
                                                 snyk config set api=$SNYK_TOKEN
                                                 snyk iac test manifests/<+infra.namespace>/templates/*.yaml || true
