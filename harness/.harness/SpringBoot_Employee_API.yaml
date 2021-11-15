@@ -18,6 +18,17 @@ pipeline:
                           namespace: harness-builds
                   execution:
                       steps:
+                          - step:
+                                type: Run
+                                spec:
+                                    connectorRef: org.Dockerhub
+                                    image: <+CI.variables.MAVEN_IMAGE>
+                                    command: mvn -DskipTests -Dsnyk.skip package
+                                    privileged: true
+                                    envVariables:
+                                        SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>N")>
+                                name: Compile
+                                identifier: Compile
                           - parallel:
                                 - step:
                                       type: Run
@@ -45,17 +56,6 @@ pipeline:
                                           privileged: true
                                           envVariables:
                                               SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>
-                          - step:
-                                type: Run
-                                spec:
-                                    connectorRef: org.Dockerhub
-                                    image: <+CI.variables.MAVEN_IMAGE>
-                                    command: mvn -DskipTests -Dsnyk.skip package
-                                    privileged: true
-                                    envVariables:
-                                        SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>N")>
-                                name: Compile
-                                identifier: Compile
                           - step:
                                 type: BuildAndPushDockerRegistry
                                 name: Build Container
