@@ -80,6 +80,19 @@ pipeline:
                                     privileged: true
                                     envVariables:
                                         SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>
+                          - step:
+                                type: Run
+                                name: Synk Monitor
+                                identifier: Synk_Monitor
+                                spec:
+                                    connectorRef: org.Dockerhub
+                                    image: <+CI.variables.SNYK_IMAGE>
+                                    command: |-
+                                        snyk config set api=$SNYK_TOKEN
+                                        snyk monitor
+                                    privileged: true
+                                    envVariables:
+                                        SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>
                   cloneCodebase: true
                   serviceConfig:
                       serviceRef: ""
