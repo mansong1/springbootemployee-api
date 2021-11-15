@@ -27,6 +27,10 @@ pipeline:
                                     privileged: true
                                     envVariables:
                                         SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>N")>
+                                    resources:
+                                        limits:
+                                            memory: 1.0Gi
+                                            cpu: "1.0"
                                 name: Compile
                                 identifier: Compile
                           - parallel:
