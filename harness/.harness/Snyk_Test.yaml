@@ -18,17 +18,11 @@ pipeline:
                                 type: Run
                                 spec:
                                     connectorRef: org.Dockerhub
-                                    image: <+CI.variables.SNYK_IMAGE>
+                                    image: snyk/snyk-cli:1.745.0-maven-3.5.4
                                     command: |-
                                         snyk config set api=$SNYK_TOKEN
-
                                         snyk test
                                     privileged: true
-                                    reports:
-                                        type: JUnit
-                                        spec:
-                                            paths:
-                                                - "**/*.xml"
                                     envVariables:
                                         SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>
                                     resources:
