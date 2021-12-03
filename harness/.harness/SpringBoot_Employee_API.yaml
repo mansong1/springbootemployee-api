@@ -93,7 +93,7 @@ pipeline:
                                     image: <+CI.variables.SNYK_IMAGE>
                                     command: |-
                                         snyk config set api=$SNYK_TOKEN
-                                        snyk container test mansong/springbootemployee:<+pipeline.sequenceId>
+                                        snyk container test mansong/springbootemployee:<+pipeline.sequenceId> || true
                                     privileged: true
                                     envVariables:
                                         SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>
