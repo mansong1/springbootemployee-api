@@ -35,18 +35,11 @@ pipeline:
                                 identifier: Compile
                           - parallel:
                                 - step:
-                                      type: Run
                                       name: Snyk Test
                                       identifier: Snyk_Test
-                                      spec:
-                                          connectorRef: org.Dockerhub
-                                          image: <+CI.variables.SNYK_IMAGE>
-                                          command: |-
-                                              snyk config set api=$SNYK_TOKEN
-                                              snyk test || true
-                                          privileged: true
-                                          envVariables:
-                                              SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>
+                                      template:
+                                          templateRef: Snyk_Test
+                                          versionLabel: "1.0"
                                 - step:
                                       type: Run
                                       name: Snyk Code Test
