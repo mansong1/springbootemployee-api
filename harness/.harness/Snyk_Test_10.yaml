@@ -1,0 +1,19 @@
+template:
+    name: Snyk Test
+    identifier: Snyk_Test
+    versionLabel: "1.0"
+    type: Step
+    projectIdentifier: Snyk
+    orgIdentifier: default
+    spec:
+        type: Run
+        spec:
+            connectorRef: org.Dockerhub
+            image: <+CI.variables.SNYK_IMAGE>
+            shell: Sh
+            command: |-
+                snyk config set api=$SNYK_TOKEN
+                snyk test || true
+            privileged: true
+            envVariables:
+                SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>
