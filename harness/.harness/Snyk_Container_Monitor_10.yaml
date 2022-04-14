@@ -1,0 +1,26 @@
+template:
+    name: Snyk Container Monitor
+    identifier: Snyk_Container_Monitor
+    versionLabel: "1.0"
+    type: Step
+    projectIdentifier: Snyk
+    orgIdentifier: default
+    spec:
+        type: Run
+        spec:
+            connectorRef: org.Dockerhub
+            image: <+CI.variables.SNYK_IMAGE>
+            shell: Sh
+            command: |-
+                snyk config set api=$SNYK_TOKEN
+                snyk container test mansong/springbootemployee:<+pipeline.sequenceId> || true
+            privileged: true
+            envVariables:
+                SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>
+            resources:
+                limits:
+                    memory: 1.0Gi
+                    cpu: "1.0"
+        when:
+            stageStatus: Success
+            condition: <codebase.branch> == "master"
