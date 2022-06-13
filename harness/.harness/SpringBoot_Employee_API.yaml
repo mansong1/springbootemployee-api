@@ -16,6 +16,8 @@ pipeline:
                       spec:
                           connectorRef: org.GKE
                           namespace: harness-builds
+                          automountServiceAccountToken: true
+                          nodeSelector: {}
                   execution:
                       steps:
                           - step:
