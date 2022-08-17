@@ -72,7 +72,7 @@ pipeline:
                                     connectorRef: account.harnessImage
                                     image: docker:dind
                                     shell: Sh
-                                    command: docker build -f Dockerfile.harness -t mansong/springbootemployee:<+pipeline.sequenceId>
+                                    command: docker build -t mansong/springbootemployee:<+pipeline.sequenceId> -f Dockerfile.harness .
                           - step:
                                 type: Security
                                 name: Snyk Container Scan
@@ -104,6 +104,10 @@ pipeline:
                             connectorRef: account.harnessImage
                             image: docker:dind
                             privileged: true
+                            resources:
+                                limits:
+                                    memory: 2.0Gi
+                                    cpu: "1.0"
                   sharedPaths:
                       - /var/run
               name: CI
