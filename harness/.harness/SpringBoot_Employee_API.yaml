@@ -206,8 +206,8 @@ pipeline:
     properties:
         ci:
             codebase:
+                connectorRef: account.Github
                 repoName: springbootemployee-api
-                connectorRef: org.Github
                 build: <+input>
     projectIdentifier: Snyk
     orgIdentifier: default
