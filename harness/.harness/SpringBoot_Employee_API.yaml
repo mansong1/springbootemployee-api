@@ -121,7 +121,7 @@ pipeline:
                                             store:
                                                 type: Github
                                                 spec:
-                                                    connectorRef: org.Github
+                                                    connectorRef: account.Github
                                                     gitFetchType: Branch
                                                     paths:
                                                         - manifests/api/templates
@@ -135,7 +135,7 @@ pipeline:
                                             store:
                                                 type: Github
                                                 spec:
-                                                    connectorRef: org.Github
+                                                    connectorRef: account.Github
                                                     gitFetchType: Branch
                                                     paths:
                                                         - manifests/api/values.yaml
@@ -146,7 +146,7 @@ pipeline:
                       infrastructureDefinition:
                           type: KubernetesDirect
                           spec:
-                              connectorRef: org.GKE
+                              connectorRef: account.GKE
                               namespace: api
                               releaseName: release-<+INFRA_KEY>
                       allowSimultaneousDeployments: false
