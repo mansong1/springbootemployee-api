@@ -18,6 +18,7 @@ pipeline:
                           namespace: harness-builds
                           automountServiceAccountToken: true
                           nodeSelector: {}
+                          os: Linux
                   execution:
                       steps:
                           - step:
@@ -37,11 +38,16 @@ pipeline:
                                 identifier: Compile
                           - parallel:
                                 - step:
+                                      type: Security
                                       name: Snyk Test
                                       identifier: Snyk_Test
-                                      template:
-                                          templateRef: Snyk_Test
-                                          versionLabel: "1.0"
+                                      spec:
+                                          privileged: true
+                                          settings:
+                                              policy_type: orchestratedScan
+                                              scan_type: repository
+                                              product_name: snyk
+                                              product_config_name: default
                                 - step:
                                       type: Run
                                       name: Snyk Code Test
@@ -85,6 +91,16 @@ pipeline:
                           type: Kubernetes
                           spec:
                               variables: []
+                  serviceDependencies:
+                      - identifier: DiND
+                        name: DiND
+                        type: Service
+                        spec:
+                            connectorRef: account.harnessImage
+                            image: docker:dind
+                            privileged: true
+                  sharedPaths:
+                      - /var/run
               name: CI
               identifier: CI
         - stage:
