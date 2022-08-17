@@ -14,7 +14,7 @@ pipeline:
                   infrastructure:
                       type: KubernetesDirect
                       spec:
-                          connectorRef: org.GKE
+                          connectorRef: account.GKE
                           namespace: harness-builds
                           automountServiceAccountToken: true
                           nodeSelector: {}
