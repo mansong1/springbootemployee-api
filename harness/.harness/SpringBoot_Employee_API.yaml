@@ -48,6 +48,7 @@ pipeline:
                                               scan_type: repository
                                               product_name: snyk
                                               product_config_name: default
+                                              product_access_token: <+secrets.getValue("org.SNYK_TOKEN")>
                                 - step:
                                       type: Run
                                       name: Snyk Code Test
