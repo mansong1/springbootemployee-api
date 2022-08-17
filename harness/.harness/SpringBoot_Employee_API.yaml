@@ -232,3 +232,4 @@ pipeline:
     name: SpringBoot Employee API
     identifier: SpringBoot_Employee_API
     description: Find security issues using static code analysis. See snyk  code --help for full instructions.
+    allowStageExecutions: true
