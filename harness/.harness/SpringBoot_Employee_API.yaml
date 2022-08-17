@@ -75,18 +75,6 @@ pipeline:
                                         - <+pipeline.sequenceId>
                                     dockerfile: Dockerfile.harness
                                     optimize: true
-                          - step:
-                                name: Snyk Container Test
-                                identifier: Snyk_Container_Test
-                                template:
-                                    templateRef: Snyk_Container_Test
-                                    versionLabel: "1.0"
-                          - step:
-                                name: Synk Container Monitor
-                                identifier: Synk_Monitor
-                                template:
-                                    templateRef: Snyk_Container_Monitor
-                                    versionLabel: "1.0"
                   cloneCodebase: true
                   serviceConfig:
                       serviceRef: ""
