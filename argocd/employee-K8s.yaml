@@ -1,20 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: springboot-employee-api-apples
-  namespace: apples
+  name: springboot-employee-api-argocd
 spec:
   selector:
     matchLabels:
-      app: springboot-employee-api-apples
+      app: springboot-employee-api-argocd
   replicas: 1
   template:
     metadata:
       labels:
-        app: springboot-employee-api-apples
+        app: springboot-employee-api-argocd
     spec:
       containers:
-        - name: springboot-employee-api-apples
+        - name: springboot-employee-api-argocd
           image: pasapples/springbootemployee:multi-stage-add-layers
           imagePullPolicy: Always
           ports:
