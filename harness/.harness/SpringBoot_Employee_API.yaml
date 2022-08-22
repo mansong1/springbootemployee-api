@@ -73,6 +73,7 @@ pipeline:
                                     image: docker:dind
                                     shell: Sh
                                     command: docker build -t mansong/springbootemployee:<+pipeline.sequenceId> -f Dockerfile.harness .
+                                    imagePullPolicy: Always
                           - step:
                                 type: Security
                                 name: Snyk Container Scan
