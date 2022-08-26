@@ -32,6 +32,21 @@ pipeline:
                         cpu: "1.0"
                   name: Snyk Test
                   identifier: Snyk_Test
+              - step:
+                  type: Security
+                  name: Snyk STO
+                  identifier: Snyk_STO
+                  spec:
+                    privileged: true
+                    settings:
+                      policy_type: ingestionOnly
+                      scan_type: repository
+                      product_name: snyk
+                      product_config_name: default
+                      manual_upload_filename: snyk_output.json
+                      customer_artifacts_path: /shared/customer_artifacts
+                      repository_project: dummy
+                      repository_branch: master
           cloneCodebase: true
           sharedPaths:
             - /shared/customer_artifacts
