@@ -35,6 +35,12 @@ pipeline:
                         cpu: "1.0"
                   name: Snyk Test
                   identifier: Snyk_Test
+                  failureStrategies:
+                    - onFailure:
+                        errors:
+                          - AllErrors
+                        action:
+                          type: Ignore
               - step:
                   type: Security
                   name: Snyk STO
