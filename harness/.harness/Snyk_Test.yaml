@@ -45,7 +45,7 @@ pipeline:
                       product_config_name: default
                       manual_upload_filename: snyk_output.json
                       customer_artifacts_path: /shared/customer_artifacts
-                      repository_project: dummy
+                      repository_project: springbootemployee-api
                       repository_branch: master
           cloneCodebase: true
           sharedPaths:
