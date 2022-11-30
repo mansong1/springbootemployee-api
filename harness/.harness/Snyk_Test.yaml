@@ -18,6 +18,14 @@ pipeline:
           execution:
             steps:
               - step:
+                  type: Background
+                  name: AWS
+                  identifier: AWS
+                  spec:
+                    connectorRef: account.harnessImage
+                    image: amazon/aws-cli
+                    shell: Sh
+              - step:
                   type: Run
                   spec:
                     connectorRef: org.Dockerhub
@@ -54,6 +62,7 @@ pipeline:
           cloneCodebase: true
           sharedPaths:
             - /shared/customer_artifacts
+            - /
         name: CI
         identifier: CI
   properties:
