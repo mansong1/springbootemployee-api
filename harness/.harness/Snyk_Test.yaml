@@ -62,6 +62,7 @@ pipeline:
           cloneCodebase: true
           sharedPaths:
             - /shared/customer_artifacts
+            - /aws
         name: CI
         identifier: CI
   properties:
