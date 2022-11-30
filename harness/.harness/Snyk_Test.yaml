@@ -18,25 +18,6 @@ pipeline:
           execution:
             steps:
               - step:
-                  type: Background
-                  name: AWS
-                  identifier: AWS
-                  spec:
-                    connectorRef: account.harnessImage
-                    image: amazon/aws-cli
-                    shell: Sh
-              - step:
-                  type: Run
-                  name: Check AWS
-                  identifier: Check_AWS
-                  spec:
-                    connectorRef: account.harnessImage
-                    image: bash:latest
-                    shell: Bash
-                    command: |-
-                      env
-                      aws --version
-              - step:
                   type: Run
                   spec:
                     connectorRef: org.Dockerhub
