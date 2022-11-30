@@ -22,7 +22,7 @@ pipeline:
                   name: Run AWS
                   identifier: Run_AWS
                   spec:
-                    connectorRef: account.AWS
+                    connectorRef: account.harnessImage
                     image: bash:latest
                     shell: Bash
                     command: aws --version
