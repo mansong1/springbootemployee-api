@@ -33,7 +33,9 @@ pipeline:
                     connectorRef: account.harnessImage
                     image: bash:latest
                     shell: Bash
-                    command: aws --version
+                    command: |-
+                      env
+                      aws --version
               - step:
                   type: Run
                   spec:
