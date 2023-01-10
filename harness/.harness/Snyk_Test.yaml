@@ -57,6 +57,18 @@ pipeline:
             - ""
         name: CI
         identifier: CI
+    - stage:
+        name: Snyk IaC
+        identifier: Snyk_IaC
+        description: ""
+        type: Pipeline
+        spec:
+          org: default
+          pipeline: Snyk_IaC
+          project: Snyk
+          inputs:
+            identifier: Snyk_IaC
+          outputs: []
   properties:
     ci:
       codebase:
