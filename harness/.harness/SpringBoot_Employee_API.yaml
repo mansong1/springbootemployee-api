@@ -44,16 +44,13 @@ pipeline:
                       repository_branch: master
               - step:
                   type: Run
-                  name: Build Container
-                  identifier: Build_Container
+                  name: Docker Build
+                  identifier: Docker_Build
                   spec:
-                    connectorRef: account.harnessImage
-                    image: docker:dind
                     shell: Sh
                     command: docker build -t mansong/springbootemployee:<+pipeline.sequenceId> -f Dockerfile.harness .
                     envVariables:
                       DOCKER_BUILDKIT: "1"
-                    imagePullPolicy: Always
               - step:
                   type: Security
                   name: Snyk Container Scan
