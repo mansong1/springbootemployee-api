@@ -28,34 +28,20 @@ pipeline:
                         cpu: "1.0"
                   name: Compile
                   identifier: Compile
-              - parallel:
-                  - step:
-                      type: Security
-                      name: Snyk Test
-                      identifier: Snyk_Test
-                      spec:
-                        privileged: true
-                        settings:
-                          policy_type: orchestratedScan
-                          scan_type: repository
-                          product_name: snyk
-                          product_config_name: default
-                          product_access_token: <+secrets.getValue("org.SNYK_TOKEN")>
-                          repository_project: springbootemployee-api
-                          repository_branch: master
-                  - step:
-                      type: Run
-                      name: Snyk Code Test
-                      identifier: Snyk_Code_Test
-                      spec:
-                        connectorRef: org.Dockerhub
-                        image: <+CI.variables.SNYK_IMAGE>
-                        command: |-
-                          snyk config set api=$SNYK_TOKEN
-                          snyk code test || true
-                        privileged: true
-                        envVariables:
-                          SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>
+              - step:
+                  type: Security
+                  name: Snyk Test
+                  identifier: Snyk_Test
+                  spec:
+                    privileged: true
+                    settings:
+                      policy_type: orchestratedScan
+                      scan_type: repository
+                      product_name: snyk
+                      product_config_name: default
+                      product_access_token: <+secrets.getValue("org.SNYK_TOKEN")>
+                      repository_project: springbootemployee-api
+                      repository_branch: master
               - step:
                   type: Run
                   name: Build Container
