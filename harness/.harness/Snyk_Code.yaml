@@ -31,6 +31,15 @@ pipeline:
             spec: {}
         name: CI
         identifier: CI
+    - stage:
+        name: TestfromGitOps
+        identifier: TestfromGitOps
+        description: ""
+        type: Pipeline
+        spec:
+          org: default
+          pipeline: Test
+          project: GitOps
   properties:
     ci:
       codebase:
