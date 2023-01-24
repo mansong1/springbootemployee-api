@@ -1,236 +1,222 @@
 pipeline:
-    tags: {}
-    stages:
-        - stage:
-              variables:
-                  - name: SNYK_IMAGE
-                    type: String
-                    value: snyk/snyk-cli:1.745.0-maven-3.5.4
-                  - name: MAVEN_IMAGE
-                    type: String
-                    value: maven:3.8.3-openjdk-11-slim
-              type: CI
-              spec:
-                  infrastructure:
-                      type: KubernetesDirect
+  tags: {}
+  stages:
+    - stage:
+        variables:
+          - name: SNYK_IMAGE
+            type: String
+            value: snyk/snyk-cli:1.745.0-maven-3.5.4
+          - name: MAVEN_IMAGE
+            type: String
+            value: maven:3.8.3-openjdk-11-slim
+        type: CI
+        spec:
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  spec:
+                    connectorRef: org.Dockerhub
+                    image: <+CI.variables.MAVEN_IMAGE>
+                    command: mvn -DskipTests -Dsnyk.skip package
+                    privileged: true
+                    envVariables:
+                      SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>N")>
+                    resources:
+                      limits:
+                        memory: 1.0Gi
+                        cpu: "1.0"
+                  name: Compile
+                  identifier: Compile
+              - parallel:
+                  - step:
+                      type: Security
+                      name: Snyk Test
+                      identifier: Snyk_Test
                       spec:
-                          connectorRef: account.GKE
-                          namespace: harness-builds
-                          automountServiceAccountToken: true
-                          nodeSelector: {}
-                          os: Linux
-                  execution:
-                      steps:
-                          - step:
-                                type: Run
-                                spec:
-                                    connectorRef: org.Dockerhub
-                                    image: <+CI.variables.MAVEN_IMAGE>
-                                    command: mvn -DskipTests -Dsnyk.skip package
-                                    privileged: true
-                                    envVariables:
-                                        SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>N")>
-                                    resources:
-                                        limits:
-                                            memory: 1.0Gi
-                                            cpu: "1.0"
-                                name: Compile
-                                identifier: Compile
-                          - parallel:
-                                - step:
-                                      type: Security
-                                      name: Snyk Test
-                                      identifier: Snyk_Test
-                                      spec:
-                                          privileged: true
-                                          settings:
-                                              policy_type: orchestratedScan
-                                              scan_type: repository
-                                              product_name: snyk
-                                              product_config_name: default
-                                              product_access_token: <+secrets.getValue("org.SNYK_TOKEN")>
-                                              repository_project: springbootemployee-api
-                                              repository_branch: master
-                                - step:
-                                      type: Run
-                                      name: Snyk Code Test
-                                      identifier: Snyk_Code_Test
-                                      spec:
-                                          connectorRef: org.Dockerhub
-                                          image: <+CI.variables.SNYK_IMAGE>
-                                          command: |-
-                                              snyk config set api=$SNYK_TOKEN
-                                              snyk code test || true
-                                          privileged: true
-                                          envVariables:
-                                              SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>
-                          - step:
-                                type: Run
-                                name: Build Container
-                                identifier: Build_Container
-                                spec:
-                                    connectorRef: account.harnessImage
-                                    image: docker:dind
-                                    shell: Sh
-                                    command: docker build -t mansong/springbootemployee:<+pipeline.sequenceId> -f Dockerfile.harness .
-                                    imagePullPolicy: Always
-                          - step:
-                                type: Security
-                                name: Snyk Container Scan
-                                identifier: Snyk_Container_Scan
-                                spec:
-                                    privileged: true
-                                    settings:
-                                        policy_type: orchestratedScan
-                                        scan_type: container
-                                        product_name: snyk
-                                        product_config_name: default
-                                        container_project: mansong/springbootemployee
-                                        container_tag: <+pipeline.sequenceId>
-                                        container_type: local
-                                        container_domain: docker.io
-                                    imagePullPolicy: Always
-                  cloneCodebase: true
-                  serviceConfig:
-                      serviceRef: ""
-                      serviceDefinition:
-                          type: Kubernetes
-                          spec:
-                              variables: []
-                  serviceDependencies:
-                      - identifier: DiND
-                        name: DiND
-                        type: Service
-                        spec:
-                            connectorRef: account.harnessImage
-                            image: docker:dind
-                            privileged: true
-                            resources:
-                                limits:
-                                    memory: 2.0Gi
-                                    cpu: "1.0"
-                  sharedPaths:
-                      - /var/run
-              name: CI
-              identifier: CI
-        - stage:
-              name: Deploy Staging
-              identifier: Deploy_Staging
-              description: ""
-              type: Deployment
+                        privileged: true
+                        settings:
+                          policy_type: orchestratedScan
+                          scan_type: repository
+                          product_name: snyk
+                          product_config_name: default
+                          product_access_token: <+secrets.getValue("org.SNYK_TOKEN")>
+                          repository_project: springbootemployee-api
+                          repository_branch: master
+                  - step:
+                      type: Run
+                      name: Snyk Code Test
+                      identifier: Snyk_Code_Test
+                      spec:
+                        connectorRef: org.Dockerhub
+                        image: <+CI.variables.SNYK_IMAGE>
+                        command: |-
+                          snyk config set api=$SNYK_TOKEN
+                          snyk code test || true
+                        privileged: true
+                        envVariables:
+                          SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>
+              - step:
+                  type: Run
+                  name: Build Container
+                  identifier: Build_Container
+                  spec:
+                    connectorRef: account.harnessImage
+                    image: docker:dind
+                    shell: Sh
+                    command: docker build -t mansong/springbootemployee:<+pipeline.sequenceId> -f Dockerfile.harness .
+                    imagePullPolicy: Always
+              - step:
+                  type: Security
+                  name: Snyk Container Scan
+                  identifier: Snyk_Container_Scan
+                  spec:
+                    privileged: true
+                    settings:
+                      policy_type: orchestratedScan
+                      scan_type: container
+                      product_name: snyk
+                      product_config_name: default
+                      container_project: mansong/springbootemployee
+                      container_tag: <+pipeline.sequenceId>
+                      container_type: local
+                      container_domain: docker.io
+                    imagePullPolicy: Always
+          cloneCodebase: true
+          serviceConfig:
+            serviceRef: ""
+            serviceDefinition:
+              type: Kubernetes
               spec:
-                  serviceConfig:
-                      serviceRef: employeeapi
-                      serviceDefinition:
-                          type: Kubernetes
+                variables: []
+          sharedPaths:
+            - /var/run
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+        name: CI
+        identifier: CI
+    - stage:
+        name: Deploy Staging
+        identifier: Deploy_Staging
+        description: ""
+        type: Deployment
+        spec:
+          serviceConfig:
+            serviceRef: employeeapi
+            serviceDefinition:
+              type: Kubernetes
+              spec:
+                variables: []
+                artifacts:
+                  primary:
+                    type: DockerRegistry
+                    spec:
+                      connectorRef: org.Dockerhub
+                      imagePath: mansong/springbootemployee
+                      tag: <+pipeline.sequenceId>
+                manifests:
+                  - manifest:
+                      identifier: staging_manifest
+                      type: K8sManifest
+                      spec:
+                        store:
+                          type: Github
                           spec:
-                              variables: []
-                              artifacts:
-                                  primary:
-                                      type: DockerRegistry
-                                      spec:
-                                          connectorRef: org.Dockerhub
-                                          imagePath: mansong/springbootemployee
-                                          tag: <+pipeline.sequenceId>
-                              manifests:
-                                  - manifest:
-                                        identifier: staging_manifest
-                                        type: K8sManifest
-                                        spec:
-                                            store:
-                                                type: Github
-                                                spec:
-                                                    connectorRef: account.Github
-                                                    gitFetchType: Branch
-                                                    paths:
-                                                        - manifests/api/templates
-                                                    repoName: springbootemployee-api
-                                                    branch: master
-                                            skipResourceVersioning: false
-                                  - manifest:
-                                        identifier: staging_values
-                                        type: Values
-                                        spec:
-                                            store:
-                                                type: Github
-                                                spec:
-                                                    connectorRef: account.Github
-                                                    gitFetchType: Branch
-                                                    paths:
-                                                        - manifests/api/values.yaml
-                                                    repoName: springbootemployee-api
-                                                    branch: master
-                  infrastructure:
-                      environmentRef: staging
-                      infrastructureDefinition:
-                          type: KubernetesDirect
+                            connectorRef: account.Github
+                            gitFetchType: Branch
+                            paths:
+                              - manifests/api/templates
+                            repoName: springbootemployee-api
+                            branch: master
+                        skipResourceVersioning: false
+                  - manifest:
+                      identifier: staging_values
+                      type: Values
+                      spec:
+                        store:
+                          type: Github
                           spec:
-                              connectorRef: account.GKE
-                              namespace: api
-                              releaseName: release-<+INFRA_KEY>
-                      allowSimultaneousDeployments: false
-                  execution:
-                      steps:
-                          - step:
-                                type: ShellScript
-                                name: Snyk IaC Test
-                                identifier: Snyk_IaC_Test
-                                spec:
-                                    shell: Bash
-                                    onDelegate: true
-                                    source:
-                                        type: Inline
-                                        spec:
-                                            script: |-
-                                                rm -rf springbootemployee-api || true
+                            connectorRef: account.Github
+                            gitFetchType: Branch
+                            paths:
+                              - manifests/api/values.yaml
+                            repoName: springbootemployee-api
+                            branch: master
+          infrastructure:
+            environmentRef: staging
+            infrastructureDefinition:
+              type: KubernetesDirect
+              spec:
+                connectorRef: account.GKE
+                namespace: api
+                releaseName: release-<+INFRA_KEY>
+            allowSimultaneousDeployments: false
+          execution:
+            steps:
+              - step:
+                  type: ShellScript
+                  name: Snyk IaC Test
+                  identifier: Snyk_IaC_Test
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          rm -rf springbootemployee-api || true
 
-                                                git clone https://github.com/mansong1/springbootemployee-api
-                                                cd springbootemployee-api
+                          git clone https://github.com/mansong1/springbootemployee-api
+                          cd springbootemployee-api
 
-                                                SNYK_TOKEN=<+secrets.getValue("org.SNYK_TOKEN")>
-                                                snyk config set api=$SNYK_TOKEN
-                                                snyk iac test manifests/<+infra.namespace>/templates/*.yaml || true
-                                    environmentVariables: []
-                                    outputVariables: []
-                                    executionTarget: {}
-                                    delegateSelectors:
-                                        - gkedelegate
-                                timeout: 10m
-                                failureStrategies: []
-                          - step:
-                                name: Rollout Deployment
-                                identifier: rolloutDeployment
-                                type: K8sRollingDeploy
-                                timeout: 10m
-                                spec:
-                                    skipDryRun: false
-                                    delegateSelectors:
-                                        - gkedelegate
-                                failureStrategies: []
-                      rollbackSteps:
-                          - step:
-                                name: Rollback Rollout Deployment
-                                identifier: rollbackRolloutDeployment
-                                type: K8sRollingRollback
-                                timeout: 10m
-                                spec: {}
-                  serviceDependencies: []
-              tags: {}
-              failureStrategies:
-                  - onFailure:
-                        errors:
-                            - AllErrors
-                        action:
-                            type: StageRollback
-    properties:
-        ci:
-            codebase:
-                connectorRef: account.Github
-                repoName: springbootemployee-api
-                build: <+input>
-    projectIdentifier: Snyk
-    orgIdentifier: default
-    name: SpringBoot Employee API
-    identifier: SpringBoot_Employee_API
-    description: Find security issues using static code analysis. See snyk  code --help for full instructions.
-    allowStageExecutions: true
+                          SNYK_TOKEN=<+secrets.getValue("org.SNYK_TOKEN")>
+                          snyk config set api=$SNYK_TOKEN
+                          snyk iac test manifests/<+infra.namespace>/templates/*.yaml || true
+                    environmentVariables: []
+                    outputVariables: []
+                    executionTarget: {}
+                    delegateSelectors:
+                      - gkedelegate
+                  timeout: 10m
+                  failureStrategies: []
+              - step:
+                  name: Rollout Deployment
+                  identifier: rolloutDeployment
+                  type: K8sRollingDeploy
+                  timeout: 10m
+                  spec:
+                    skipDryRun: false
+                    delegateSelectors:
+                      - gkedelegate
+                  failureStrategies: []
+            rollbackSteps:
+              - step:
+                  name: Rollback Rollout Deployment
+                  identifier: rollbackRolloutDeployment
+                  type: K8sRollingRollback
+                  timeout: 10m
+                  spec: {}
+          serviceDependencies: []
+        tags: {}
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: StageRollback
+  properties:
+    ci:
+      codebase:
+        connectorRef: account.Github
+        repoName: springbootemployee-api
+        build: <+input>
+  projectIdentifier: Snyk
+  orgIdentifier: default
+  name: SpringBoot Employee API
+  identifier: SpringBoot_Employee_API
+  description: Find security issues using static code analysis. See snyk  code --help for full instructions.
+  allowStageExecutions: true
