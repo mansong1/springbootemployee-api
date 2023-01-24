@@ -1,72 +1,73 @@
 pipeline:
-    stages:
-        - stage:
-              variables:
-                  - name: SNYK_IMAGE
-                    type: String
-                    value: snyk/snyk-cli:1.745.0-maven-3.5.4
-                  - name: MAVEN_IMAGE
-                    type: String
-                    value: maven:3.8.3-openjdk-11-slim
-              type: CI
-              spec:
-                  infrastructure:
-                      type: KubernetesDirect
-                      spec:
-                          namespace: harness-builds
-                          connectorRef: org.GKE
-                  execution:
-                      steps:
-                          - step:
-                                type: Run
-                                spec:
-                                    connectorRef: org.Dockerhub
-                                    image: <+CI.variables.MAVEN_IMAGE>
-                                    command: mvn -DskipTests -Dsnyk.skip package
-                                    privileged: true
-                                    envVariables:
-                                        SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>N")>
-                                name: Compile
-                                identifier: Compile
-                          - step:
-                                type: BuildAndPushDockerRegistry
-                                name: Build Container
-                                identifier: Build_Container
-                                spec:
-                                    connectorRef: org.Dockerhub
-                                    repo: mansong/springbootemployee
-                                    tags:
-                                        - <+pipeline.sequenceId>
-                                    dockerfile: Dockerfile.harness
-                                    optimize: true
-                          - step:
-                                type: Run
-                                name: Snyk Container Test
-                                identifier: Snyk_Container_Test
-                                spec:
-                                    connectorRef: org.Dockerhub
-                                    image: <+CI.variables.SNYK_IMAGE>
-                                    command: |-
-                                        snyk config set api=$SNYK_TOKEN
-                                        snyk container test mansong/springbootemployee:<+pipeline.sequenceId>
-                                    privileged: true
-                                    envVariables:
-                                        SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>
-                                    resources:
-                                        limits:
-                                            memory: 1.0Gi
-                                            cpu: "1.0"
-                  cloneCodebase: true
-              name: CI
-              identifier: CI
-    properties:
-        ci:
-            codebase:
-                repoName: springbootemployee-api
-                connectorRef: org.Github
-                build: <+input>
-    projectIdentifier: Snyk
-    orgIdentifier: default
-    name: Snyk Container
-    identifier: Snyk_Container
-    description: Test container images for vulnerabilities. See snyk container --help for full instructions.
+  stages:
+    - stage:
+        variables:
+          - name: SNYK_IMAGE
+            type: String
+            value: snyk/snyk-cli:1.745.0-maven-3.5.4
+          - name: MAVEN_IMAGE
+            type: String
+            value: maven:3.8.3-openjdk-11-slim
+        type: CI
+        spec:
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  spec:
+                    connectorRef: org.Dockerhub
+                    image: <+CI.variables.MAVEN_IMAGE>
+                    command: mvn -DskipTests -Dsnyk.skip package
+                    privileged: true
+                    envVariables:
+                      SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>N")>
+                  name: Compile
+                  identifier: Compile
+              - step:
+                  type: BuildAndPushDockerRegistry
+                  name: Build Container
+                  identifier: Build_Container
+                  spec:
+                    connectorRef: org.Dockerhub
+                    repo: mansong/springbootemployee
+                    tags:
+                      - <+pipeline.sequenceId>
+                    dockerfile: Dockerfile.harness
+                    optimize: true
+              - step:
+                  type: Run
+                  name: Snyk Container Test
+                  identifier: Snyk_Container_Test
+                  spec:
+                    connectorRef: org.Dockerhub
+                    image: <+CI.variables.SNYK_IMAGE>
+                    command: |-
+                      snyk config set api=$SNYK_TOKEN
+                      snyk container test mansong/springbootemployee:<+pipeline.sequenceId>
+                    privileged: true
+                    envVariables:
+                      SNYK_TOKEN: <+secrets.getValue("org.SNYK_TOKEN")>
+                    resources:
+                      limits:
+                        memory: 1.0Gi
+                        cpu: "1.0"
+          cloneCodebase: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+        name: CI
+        identifier: CI
+  properties:
+    ci:
+      codebase:
+        repoName: springbootemployee-api
+        connectorRef: org.Github
+        build: <+input>
+  projectIdentifier: Snyk
+  orgIdentifier: default
+  name: Snyk Container
+  identifier: Snyk_Container
+  description: Test container images for vulnerabilities. See snyk container --help for full instructions.
