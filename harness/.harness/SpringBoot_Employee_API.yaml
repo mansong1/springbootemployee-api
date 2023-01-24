@@ -51,6 +51,8 @@ pipeline:
                     image: docker:dind
                     shell: Sh
                     command: docker build -t mansong/springbootemployee:<+pipeline.sequenceId> -f Dockerfile.harness .
+                    envVariables:
+                      DOCKER_BUILDKIT: "1"
                     imagePullPolicy: Always
               - step:
                   type: Security
