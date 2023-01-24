@@ -67,6 +67,10 @@ pipeline:
                       container_type: local
                       container_domain: docker.io
                     imagePullPolicy: Always
+                  when:
+                    stageStatus: Success
+                    condition: "false"
+                  failureStrategies: []
           cloneCodebase: true
           serviceConfig:
             serviceRef: ""
