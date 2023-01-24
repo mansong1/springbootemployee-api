@@ -71,6 +71,13 @@ pipeline:
                     stageStatus: Success
                     condition: "false"
                   failureStrategies: []
+              - step:
+                  type: Run
+                  name: Docker Push
+                  identifier: Docker_Push
+                  spec:
+                    shell: Sh
+                    command: mansong/springbootemployee:<+pipeline.sequenceId>
           cloneCodebase: true
           serviceConfig:
             serviceRef: ""
